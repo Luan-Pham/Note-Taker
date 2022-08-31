@@ -44,6 +44,7 @@ apiRouter.delete("/notes/:id", function (req, res) {
     .then(function (notes) {
       writeFileAsync("./db/db.json", JSON.stringify(notes));
     });
+  reload();
 });
 
 module.exports = apiRouter;
