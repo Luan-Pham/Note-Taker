@@ -3,17 +3,11 @@ const fs = require("fs");
 const path = require("path");
 const util = require("util");
 
-const readFileaSync = util.promisify(fs.readFile);
+const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 
-const randomID = function () {
-  Math.floor((1 + Math.random()) * 0x10000)
-    .toString(16)
-    .substring(1);
-};
-
 apiRouter.get("/notes", function (req, res) {
-  readFileaSync("./db/db.json", "utf-8").then(function (data) {
+  readFileAsync("./db/db.json", "utf-8").then(function (data) {
     notes = [].concat(JSON.parse(data));
     res.json(notes);
   });
@@ -21,10 +15,10 @@ apiRouter.get("/notes", function (req, res) {
 
 apiRouter.post("/notes", function (req, res) {
   const note = req.body;
-  readFileaSync("./db/db.json", "utf-8")
+  readFileAsync("./db/db.json", "utf-8")
     .then(function (data) {
       const notes = [].concat(JSON.parse(data));
-      notes.id = randomID();
+      note.id = notes.length + 1;
       notes.push(note);
       return notes;
     })
@@ -35,17 +29,17 @@ apiRouter.post("/notes", function (req, res) {
 });
 
 apiRouter.delete("/notes/:id", function (req, res) {
-  const noteID = parseInt(req.params.id);
-  readFileaSync("./db/db.json", "utf-8")
+  const idToDelete = parseInt(req.params.id);
+  readFileAsync("./db/db.json", "utf-8")
     .then(function (data) {
       const notes = [].concat(JSON.parse(data));
-      const notesData = [];
+      const newNotesData = [];
       for (let i = 0; i < notes.length; i++) {
-        if (noteID !== notes[i].id) {
-          notesData.push(notes[i]);
+        if (idToDelete !== notes[i].id) {
+          newNotesData.push(notes[i]);
         }
       }
-      return notesData;
+      return newNotesData;
     })
     .then(function (notes) {
       writeFileAsync("./db/db.json", JSON.stringify(notes));
