@@ -43,8 +43,8 @@ apiRouter.delete("/notes/:id", function (req, res) {
     })
     .then(function (notes) {
       writeFileAsync("./db/db.json", JSON.stringify(notes));
+      res.status(200).end();
     });
-  reload();
 });
 
 module.exports = apiRouter;
